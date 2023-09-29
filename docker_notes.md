@@ -52,3 +52,33 @@ You can run `docker rm` to remove docker containers that are stopped, which help
 
 Docker ps -aq shows all docker container ids, the takes the output, feeding it to xargs. Xargs is a useful as it allows us to perform actions on a list, similar to a loop. Here we run docker rm to apply the command to each member of docker ps -aq.
 
+## Accessing Container Network Services from Your Host
+Docker provides the ability to access network ports within a container using port binding. This allows Docker to map a port on your host machine to a port within the container, acting as an intermediary between your computer and the container itself. This is incredibly useful when packaging applications that rely on specific ports, such as frontend applications running on localhost connected to backend servers.
+
+To build a network service, you need to create a Dockerfile and build an image:
+
+
+```docker build -t our-web-server -f web-server.Dockerfile .```
+Breaking down the command: docker, please build an image in the current directory (.), naming it -t as `our-web-server`, and use the Dockerfile specified with `-f` as web-server.Dockerfile.
+
+Once you've built the image, you can create a container from it:
+
+```docker run -d --name our-web-server -p 5001:5000 our-web-server```
+In this command, you're telling Docker to run a container in detached mode (`-d`) with the name `--name` set as `our-web-server`. The container should expose port 5000 internally and map it to port 5001 externally on your host using the `our-web-server` image.
+
+## Saving Data from Containers
+In Docker, you can create a container that executes commands and automatically deletes itself when it exits by adding the --rm flag to a docker run command:
+
+
+`docker run --rm [options]`
+You can also create files inside containers by specifying an entrypoint flag:
+
+
+```docker run --rm --entrypoint sh ubuntu -c "echo 'Hello there.' > /tmp/file && cat /tmp/file"```
+In this example, you're running a Docker container, and it will be deleted after it has executed its code. Before deletion, it uses the `ubuntu` image, enters the container with the `--entrypoint` set to sh shell, copies the output of '`Hello there.`' into `/tmp/file`, and then displays the contents of that file.
+
+However, the data will be lost after the container is deleted. To keep a reference, you can link a file on your host machine to a file inside the container:
+
+
+```docker run --rm --entrypoint sh -v /tmp/container:/tmp ubuntu -c "echo 'Hello there.' > /tmp/file && cat /tmp/file"```
+The key part to notice here is the `-v /tmp/container:/tmp` flag. `-v` stands for "volume," and the syntax is `host_file_or_directory:container_file_or_directory`. Ensure that the file on your host machine exists before creating this link, as Docker will create a directory if it doesn't exist.
