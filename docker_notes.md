@@ -82,3 +82,15 @@ However, the data will be lost after the container is deleted. To keep a referen
 
 ```docker run --rm --entrypoint sh -v /tmp/container:/tmp ubuntu -c "echo 'Hello there.' > /tmp/file && cat /tmp/file"```
 The key part to notice here is the `-v /tmp/container:/tmp` flag. `-v` stands for "volume," and the syntax is `host_file_or_directory:container_file_or_directory`. Ensure that the file on your host machine exists before creating this link, as Docker will create a directory if it doesn't exist.
+
+# Container image registry
+A container image registry is a place for storing and tracking container images. Container image tracked by their tags, which is a string combining the name of the image and its version with a semi colon (option). Container images that do no have a version automatically get tagged with a version called "latest". This allows us to select which version of an image we want to use.
+
+You can also push your images to the container registry. First, you should ensure you have a docker account then run `docker login` in your terminal. After that, rename your image to something meaningful, for example:
+
+` docker tag our-web-server your_docker_username_here/our-web-server:0.0.1`
+
+The `tag` command is renaming our image, `our-web-server` to a docker username, followed by its version ( **:** ), 0.0.1. This operation is similar to the linux `mv` command. To push the image, simply run the docker push command:
+
+`docker push your_image_name`, replacing `your_image_name` with the name of your image.
+
